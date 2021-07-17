@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Bird nest</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">  
+  </head>
+  <body>
+    <main>
+
+    <section class="py-5 text-center container">
+        <div class="row py-lg-5">
+        <div class="col-lg-6 col-md-8 mx-auto">
+            <h1 class="fw-light">BirdNest</h1>                
+        </div>
+        </div>
+    </section>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Titulo</th>
+          <th scope="col">Vinculo</th>
+          <th scope="col">Resumen</th>
+          <th scope="col">Cluster</th>
+          <th scope="col">Similitud</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if d %}  
+          {% for i in d %}
+            <tr>
+              <td>{{i.titulo}}</td>
+              <td>{{i.vinculo}}</td>
+              <td>{{i.resumen}}</td>
+              <td>{{i.Cluster}}</td>
+              <td>{{i.Similitud}}</td>
+            </tr>
+          {% endfor %}
+        {% endif %} 
+      </tbody>
+    </table>
+
+    </main>
+  </body>
+</html>
