@@ -1,4 +1,6 @@
-<!doctype html>
+{% load static %}
+
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -7,30 +9,52 @@
   </head>
   <body>
     <main>
-
-    <section class="py-5 text-center container">
-        <div class="row py-lg-5">
-        <div class="col-lg-6 col-md-8 mx-auto">
-            <h1 class="fw-light">BirdNest</h1>
+      {% include "head/header.html" %}
+      <div class="container">
+        <div class="row justify-content-md-center">
+          <div class="col-md-auto">
+            <button type="button" class="btn btn-outline-secondary" onclick="goBack()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+              </svg>
+              Atras
+            </button>
+          </div>
+        </div>
+      </div>
+      <script>
+      function goBack() {
+        window.history.back();
+      }
+      </script>
+      <section class="py-2 text-center container">
+        <div class="row">
+          <div class="col-4">
+            <div class="card text-center" style="width: 18rem;">
+              <img src="{% static 'img/example.jpg' %}" alt="grafica logo" />
+              <div class="card-body">
+                <p class="card-text">A partir de esta grafica, determina el codo para la cantidad de clusters que se quiere generar</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-8">
             <form action="/clusters/" method="GET">
-                <div class="input-group mb-3">
-                    <input class="form-control" type="text" placeholder={{busqueda}} aria-label="Disabled input example" disabled>
-                    <div class="input-group">
-                        <span class="input-group-text">Contexto de busqueda</span>
-                        <textarea class="form-control" name="contexto" aria-label="Contexto de busqueda"></textarea>
-                    </div>
-                    <div class="input-group">
-                        <span class="input-group-text">Codo/Grafica</span>
-                        <input class="form-control" name="codo" aria-label="Codo/Grafica">
-                        <input  type="submit" name="analisis" class="btn btn-outline-secondary" id="button-addon2">
-                    </div>
-                    
-                </div>
+              <input class="form-control" type="text" placeholder="{{busqueda}}" disabled>
+              <div class="input-group">
+                  <span class="input-group-text">Contexto de busqueda</span>
+                  <textarea class="form-control" name="contexto" aria-label="Contexto de busqueda" required></textarea>
+              </div>
+              
+              <div class="input-group">
+                  <span class="input-group-text">Codo/Grafica</span>
+                  <input class="form-control" type="number" name="codo" aria-label="Codo/Grafica" required>
+                  <input  type="submit" name="analisis" class="btn btn-outline-secondary" id="button-addon2">
+              </div>
             </form>
+          </div>
         </div>
-        </div>
-    </section>
-
+      </section>
+      
     </main>
   </body>
 </html>

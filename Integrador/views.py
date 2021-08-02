@@ -28,7 +28,6 @@ import matplotlib.pyplot as plt
 import string
 import nltk
 from nltk.corpus import stopwords
-from tkinter import *
 from PIL import ImageTk, Image
 
 #Create your views here
@@ -40,10 +39,10 @@ def busqueda_ppl(request):
 def buscar(request):
 
     if request.GET["prd"]:
-        parametro="%r" %request.GET["prd"]
-        """
+        parametro=str(request.GET["prd"])
+        #"""
         #Ingreso del idioma de búsqueda
-        idioma = "ES"
+        idioma = "EN"
 
         #Ingreso la cantidad que quiero de resultados (Multiplo de 10)
         cantidadres = 10
@@ -72,10 +71,9 @@ def buscar(request):
     
         #Respuesta obtenida
         response = requests.get(url, headers=headers)
-    
+        print(response)
         #creacion objeto BeaustifulSoup con los parametros requeridos para el webscraping
         soup= BeautifulSoup(response.content,'lxml')
-    
         itbusqueda = cantidadres/10
         for i in range(0, int(itbusqueda)):
             start = i*10
@@ -88,28 +86,29 @@ def buscar(request):
     
             #creacion objeto BeaustifulSoup con los parametros requeridos para el webscraping
             soup= BeautifulSoup(response.content,'lxml')
-    
+            print(soup)
             for item in soup.select('[data-lid]'):
-                #print(item)
-                #Titulo del articulo
-                titulo = str(item.select('h3')[0].get_text())
-    
-                tipodoc = titulo.find("[CITAS]")
-    
-                if tipodoc==-1:
-                    #vinculo del articulo
-                    vinculo = str(item.select('a')[0]['href'])
-                    print(vinculo)
-                    #Resumen
-                    resumen = str(item.select('.gs_rs')[0].get_text())
-                    print(resumen)
-                    print('-------------------')
-                    writer.writerow([str(titulo),str(vinculo),str(resumen)]) 
+                if item.select('.gs_rs'):
+                    #Titulo del articulo
+                    titulo = str(item.select('h3')[0].get_text())
+        
+                    tipodoc = titulo.find("[CITAS]")
+        
+                    if tipodoc==-1:
+                        #vinculo del articulo
+                        vinculo = str(item.select('a')[0]['href'])
+                        print(vinculo)
+                        #Resumen
+                        resumen = str(item.select('.gs_rs')[0].get_text())
+                        
+                        print(resumen)
+                        print('-------------------')
+                        writer.writerow([str(titulo),str(vinculo),str(resumen)]) 
                 
             itbusqueda = int(itbusqueda) - 1
                 
         file.close()
-        
+        #"""
         #Analisis archivo csv
         data = pd.read_csv('resultados.csv') 
         
@@ -137,20 +136,9 @@ def buscar(request):
             ax.set_xticklabels(iters)
             ax.set_ylabel('SSE')
             ax.set_title('SSE by Cluster Center Plot')
-            plt.savefig('example.jpg')
+            plt.savefig('static/img/example.jpg')
             
         find_optimal_clusters(text, 10)
-        
-        global my_img
-        top = Toplevel()
-        top.title('Analisis graph')
-        my_img = ImageTk.PhotoImage(Image.open("example.jpg"))
-        my_label = Label(top, image=my_img)
-        my_label.pack()
-            
-        """
-
-
 
 
         return render(request, "analisis.html", {"busqueda": parametro})
@@ -212,31 +200,22 @@ def analisis(request):
         # data.to_csv('out.csv')
 
         #Procentajes de similitud
-        file_docs = []
+        filedocument = []
 
-        #Contexto
-        tokens = sent_tokenize(contexto)
-        for line in tokens:
-            file_docs.append(line)
-        #Tokenize words and create dictionary
-        gen_docs = [[w.lower() for w in word_tokenize(text)] 
-                    for text in file_docs]
+        sentences = sent_tokenize(contexto)
+        for sentence in sentences:
+            filedocument.append(sentence)
+
+        gen_docs = [[w.lower() for w in word_tokenize(text)] for text in filedocument]
 
         dictionary = gensim.corpora.Dictionary(gen_docs)
+        corpus = [dictionary.doc2bow(gen_docs) for gen_docs in gen_docs]
 
-        #Create a bag of words
-        corpus = [dictionary.doc2bow(gen_doc) for gen_doc in gen_docs]
-
-        #Term Frequency – Inverse Document Frequency(TF-IDF)
         tf_idf = gensim.models.TfidfModel(corpus)
 
-        #Creating similarity measure object
         sims = gensim.similarities.Similarity('../',tf_idf[corpus],
                                                 num_features=len(dictionary))
-
-        #Create Query Document
-        file2_docs = []
-
+        file2_document = []
         #Texto 2
         datos = pd.read_csv('resultados.csv', header=0)
         resumen = datos['resumen']
@@ -244,34 +223,20 @@ def analisis(request):
         porcentajes = []
         for line in resumen:
             
-            tokens = sent_tokenize(str(line))
-            for line in tokens:
-                file2_docs.append(line)
-            for line in file2_docs:
-                query_doc = [w.lower() for w in word_tokenize(line)]
-                query_doc_bow = dictionary.doc2bow(query_doc) #update an existing dictionary and create bag of words
-            #Avg sims 2
-            
-            avg_sims = [] # array of averages
-            
-            for line in file2_docs:
-                sum_of_sims = 0
+            sentences = sent_tokenize(line)
+            for sentence in sentences:
+                file2_document.append(sentence)
+
+            for line in file2_document:
                 query_doc = [w.lower() for w in word_tokenize(line)]
                 query_doc_bow = dictionary.doc2bow(query_doc)
-                query_doc_tf_idf = tf_idf[query_doc_bow]
-                sum_of_sims =(np.sum(sims[query_doc_tf_idf], dtype=np.float32))
-                avg = sum_of_sims / len(file_docs)
-                avg_sims.append(avg)  
-            total_avg = 0
-            total_avg = np.sum(avg_sims, dtype=np.float64)
-            percentage_of_similarity = round(float(total_avg) * 100)
+
+            query_doc_tf_idf = tf_idf[query_doc_bow]
+            sum_of_sims = (np.sum(sims[query_doc_tf_idf], dtype=np.float32))
+            percentage_of_similarity = round(float(sum_of_sims/len(filedocument))*100)
             porcentajes.append(percentage_of_similarity)
-            if percentage_of_similarity >= 100:
-                percentage_of_similarity = 100
-            avg_sims.clear()
-            file2_docs.clear()
-        
-        
+            file2_document.clear()
+
         data['Similitud'] = porcentajes
         #generando archivo de salida
         data.to_csv('out.csv')
@@ -283,7 +248,7 @@ def analisis(request):
 
         #wordcloud
         wordc_list = []
-        for i in range(4):
+        for i in range(codo):
         
             datos = pd.read_csv('out.csv', header=0)
             texto = str(datos[datos.iloc[:,4]==i]['resumen'])
@@ -371,8 +336,9 @@ def analisis(request):
             #WordCloud sencillo
             
             word_cloud = WordCloud(height=800, width=800, background_color='white',max_words=150, min_font_size=5, collocation_threshold=10).generate(clean_texto)
-            narchivo = "wordc"+str(i)+".png"
-            word_cloud.to_file(narchivo) #Guardamos la imagen generada
+            narchivo = "img/wordc"+str(i)+".png"
+            gnarchivo = "static/"+narchivo
+            word_cloud.to_file(gnarchivo) #Guardamos la imagen generada
             
             plt.figure(figsize=(10,8))
             plt.imshow(word_cloud)

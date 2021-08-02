@@ -1,4 +1,6 @@
-<!doctype html>
+{% load static %}
+
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -7,39 +9,52 @@
   </head>
   <body>
     <main>
-
-    <section class="py-5 text-center container">
-        <div class="row py-lg-5">
-        <div class="col-lg-6 col-md-8 mx-auto">
-            <h1 class="fw-light">BirdNest</h1>                
+      {% include "head/header.html" %}
+      <div class="container">
+        <div class="row justify-content-md-center">
+          <div class="col-md-auto">
+            <button type="button" class="btn btn-outline-secondary" onclick="goBack()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+              </svg>
+              Atras
+            </button>
+          </div>
         </div>
-        </div>
-    </section>
-
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Titulo</th>
-          <th scope="col">Vinculo</th>
-          <th scope="col">Resumen</th>
-          <th scope="col">Cluster</th>
-          <th scope="col">Similitud</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% if d %}  
-          {% for i in d %}
+      </div>
+      <script>
+      function goBack() {
+        window.history.back();
+      }
+      </script>
+      
+      
+        <table class="table">
+          <thead>
             <tr>
-              <td>{{i.titulo}}</td>
-              <td>{{i.vinculo}}</td>
-              <td>{{i.resumen}}</td>
-              <td>{{i.Cluster}}</td>
-              <td>{{i.Similitud}}</td>
+              <th scope="col">Similitud</th>
+              <th scope="col">Titulo</th>
+              <th scope="col">Resumen</th>
+              <th scope="col">Vinculo</th>
+              
             </tr>
-          {% endfor %}
-        {% endif %} 
-      </tbody>
-    </table>
+          </thead>
+          <tbody>
+            {% if d %}  
+              {% for i in d %}
+                <tr>
+                  <td>{{i.Similitud}}</td>
+                  <td>{{i.titulo}}</td>
+                  <td>{{i.resumen}}</td>
+                  <td><a href="{{i.vinculo}}">{{i.vinculo}}</a></td>
+                  
+                </tr>
+              {% endfor %}
+            {% endif %} 
+          </tbody>
+        </table>
+      
+    
 
     </main>
   </body>

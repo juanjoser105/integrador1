@@ -1,4 +1,6 @@
-<!doctype html>
+{% load static %}
+
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -7,23 +9,43 @@
   </head>
   <body>
     <main>
-
-    <section class="py-5 text-center container">
-        <div class="row py-lg-5">
-        <div class="col-lg-6 col-md-8 mx-auto">
-            <h1 class="fw-light">BirdNest</h1>  
-                {% for linkswrdc in wordc_list %}
-                    <form action="/resultados/" method="GET">
-                            <img src={{linkswrdc}} alt={{linkswrdc}} width="500" height="500"/>
-                            <label><h3>Cluster: {{forloop.counter0}}</h3></label>
-                            <input style="display:none  !important;" class="form-control" type="text" name="conjunto" value="{{forloop.counter0}}" aria-label="{{forloop.counter0}}"/>
-                            <input type="submit" name="result" class="btn btn-outline-secondary" id="button-addon2" />
-                            <br>
-                    </form>
-                {% endfor %}                     
+      {% include "head/header.html" %}
+      <div class="container">
+        <div class="row justify-content-md-center">
+          <div class="col-md-auto">
+            <button type="button" class="btn btn-outline-secondary" onclick="goBack()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+              </svg>
+              Atras
+            </button>
+          </div>
         </div>
+      </div>
+      <script>
+      function goBack() {
+        window.history.back();
+      }
+      </script>
+      <div class="album py-2 bg-light">
+        <div class="container">
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+              {% for linkswrdc in wordc_list %}
+              <div class="col">
+                <form action="/resultados/" method="GET">
+                        <img src="{% static linkswrdc %}" alt="wordcloud {{forloop.counter0}}" width="300" height="300"/>
+                        <input style="display:none  !important;" class="form-control" type="text" name="conjunto" value="{{forloop.counter0}}" aria-label="{{forloop.counter0}}"/>
+                        <div class="input-group mb-3">
+                          <span class="input-group-text">Palabras comunes del cl&uacute;ster #{{forloop.counter}}</span>
+                          <input type="submit" name="result" class="btn btn-outline-secondary" id="button-addon2" value="Ver resultados"/>
+                        </div>
+                        <br>
+                </form>
+              </div>
+              {% endfor %}   
+          </div>
         </div>
-    </section>
+      </div>
 
     </main>
   </body>
